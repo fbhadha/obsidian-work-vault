@@ -7,6 +7,16 @@ Software engineering solved this problem decades ago with design patterns — pr
 The goal is not to memorize these. It's to recognize which pattern fits when you look at a workflow, so you can design agents that work reliably rather than agents that demo well and break in production.
  
 ---
+
+## The Six Patterns
+ 
+1. **Pipeline** — Agents execute in strict sequence. A hands to B hands to C. Assembly line.
+2. **Fan-out / Fan-in** — One agent splits work across parallel agents. A final agent combines results.
+3. **Expert Pool** — A router classifies the request and sends it to the right specialist.
+4. **Producer-Reviewer** — One agent creates, a second evaluates. Failures loop back with feedback.
+5. **Supervisor** — A coordinator assigns tasks dynamically based on what it learns at each step.
+6. **Hierarchical Delegation** — A top agent breaks the problem into sub-problems and delegates down.
+Most real workflows combine patterns — a Pipeline where one stage contains a Producer-Reviewer loop, or a Fan-out where the routing uses an Expert Pool.
  
 ## The Six Patterns
  
