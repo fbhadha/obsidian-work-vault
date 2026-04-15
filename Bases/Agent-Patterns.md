@@ -111,3 +111,64 @@ Most real workflows are not a single pure pattern. They are combinations. A Pipe
 The skill is recognizing which pattern governs the primary structure, and where a secondary pattern applies at a specific stage. Agent Forge's Architecture Designer selects the primary pattern first, then layers secondary patterns where the workflow demands them.
  
 ---
+## Proposed Additions to the Repository
+ 
+The following agent workflows would expand the repository's coverage across business functions and demonstrate more pattern variety. Each one is scoped to be buildable with Gemini Enterprise and the A1A team's existing infrastructure.
+ 
+### RFP Response Assembler
+**Pattern:** Pipeline with Producer-Reviewer loop
+**Team:** Enterprise Sales
+**What it does:** Takes an incoming RFP document, parses the requirements into structured format, matches each requirement against a knowledge base of pre-approved response blocks (product specs, SLA terms, security certifications, case studies), and assembles a draft response document. A reviewer agent checks for completeness, consistency, and tone. Gaps where no approved content exists are flagged for human input.
+**Sub-patterns:** Document parsing, RAG content retrieval, gap detection, quality review loop.
+**Why it matters:** Enterprise sales teams spend days assembling RFP responses from scattered documents. This workflow is high-volume, highly repetitive, and directly tied to revenue.
+ 
+### Employee Onboarding Coordinator
+**Pattern:** Fan-out / Fan-in
+**Team:** HR — People Operations
+**What it does:** When a new hire is confirmed, a dispatcher agent sends parallel requests to IT (laptop and account provisioning), Facilities (badge and workspace), Finance (payroll setup), and the hiring manager (first-week schedule). A tracker agent monitors completion across all streams and escalates anything outstanding after 48 hours. Bilingual welcome communications generated automatically.
+**Sub-patterns:** Parallel task dispatch, status aggregation, follow-up escalation, bilingual notification drafting.
+**Why it matters:** Onboarding involves four or five departments that don't coordinate well. Dropped tasks (new hire shows up with no laptop, no badge, no payroll) are common and expensive. This pattern is reusable for any multi-department coordination workflow.
+ 
+### Network Incident Triage
+**Pattern:** Expert Pool
+**Team:** NOC — Tier 1
+**What it does:** Reads an incoming incident alert and classifies it by type (outage, degradation, maintenance, false alarm) and severity. Routes to the appropriate specialist agent: the outage agent drafts customer notifications and internal escalation summaries simultaneously; the degradation agent assesses scope and estimated resolution time; the maintenance agent verifies the change window and confirms planned status. Human review required before any customer-facing communication goes out.
+**Sub-patterns:** Intent classification, severity scoring, templated notification drafting, parallel notification dispatch.
+**Why it matters:** Network reliability is the core product of a telco. Speed of triage directly affects customer experience and regulatory compliance (CRTC reporting timelines). The classification pattern transfers to any triage workflow.
+ 
+### Contract Clause Reviewer
+**Pattern:** Producer-Reviewer
+**Team:** Legal — Commercial Contracts
+**What it does:** Reads a vendor or customer contract, extracts key clauses (term length, liability caps, termination provisions, auto-renewal terms, SLA commitments), and compares them against a library of approved standard language. A reviewer agent flags deviations from standard terms and scores each clause as "standard," "minor deviation," or "requires legal review." Humans handle anything scored as requiring review.
+**Sub-patterns:** Document parsing, clause extraction, comparison against reference library, deviation scoring.
+**Why it matters:** Contract review is slow, expensive, and bottlenecked on a small legal team. Automating the comparison against standard language lets lawyers focus on the clauses that actually need judgment rather than reading boilerplate.
+ 
+### Competitive Price Monitor
+**Pattern:** Fan-out / Fan-in with Expert Pool routing
+**Team:** Strategy — Competitive Intelligence
+**What it does:** Dispatches monitoring agents to track competitor pricing across wireless plans, internet packages, and bundles. Each agent specializes in one competitor (Rogers, Telus, regional carriers). A collector agent aggregates changes, and a routing agent classifies each change by severity: cosmetic (plan name change), tactical (short-term promotion), or strategic (permanent price restructuring). Strategic changes trigger an alert to the pricing team with a recommended response analysis.
+**Sub-patterns:** Parallel web monitoring, competitor-specific parsing, change classification, severity-based routing, alert generation.
+**Why it matters:** In a price war, knowing what competitors did yesterday is too late. Automated monitoring with intelligent classification lets the pricing team respond to strategic moves within hours instead of days.
+ 
+### Regulatory Filing Preparer
+**Pattern:** Hierarchical Delegation
+**Team:** Regulatory Affairs
+**What it does:** Top-level agent receives a filing deadline and type (CRTC annual report, spectrum licence renewal, tariff filing). It breaks the filing into required sections and delegates each to a specialist sub-agent: one pulls network coverage data, another pulls service quality metrics, another pulls financial disclosures, another assembles the required legal language. Sub-agents may further delegate (the financial sub-agent pulls from multiple internal systems). A final assembly agent combines all sections and runs a completeness check against the regulatory template. Human review mandatory before submission.
+**Sub-patterns:** Task decomposition, multi-source data collection, template-based assembly, completeness validation, mandatory human gate.
+**Why it matters:** Regulatory filings are high-stakes, multi-department coordination problems with hard deadlines. Missing a section or filing late has real consequences. The hierarchical pattern handles the complexity while keeping each sub-agent focused on a manageable piece.
+ 
+---
+ 
+## Pattern Selection Quick Reference
+ 
+| Workflow characteristic | Pattern to use |
+|---|---|
+| Steps are strictly sequential, each depends on the last | Pipeline |
+| Independent sub-tasks can run at the same time | Fan-out / Fan-in |
+| First step is always "what type of thing is this?" | Expert Pool |
+| Quality control is critical, output needs review cycles | Producer-Reviewer |
+| Next step depends on what you find in the current step | Supervisor |
+| Problem is too large for a single agent layer | Hierarchical Delegation |
+| Quality control needed at one stage of a linear process | Pipeline + Producer-Reviewer |
+| Classification followed by parallel specialist work | Expert Pool + Fan-out |
+| Large problem with compliance requirements at leaf nodes | Hierarchical Delegation + Producer-Reviewer |
